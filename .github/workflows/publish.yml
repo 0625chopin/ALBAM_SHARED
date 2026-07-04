@@ -1,0 +1,51 @@
+name: publish
+
+# @0625chopin/shared 를 GitHub Packages(npm)에 발행한다.
+# 트리거: GitHub Release 발행 시 + 수동 실행(workflow_dispatch).
+# ⚠️ 스코프 주의: GitHub Packages npm은 "패키지 스코프 = 저장소 소유자(user/org)" 여야 한다.
+#    - 소유자가 org 'almbam' 이면 @0625chopin/shared 그대로 사용.
+#    - 개인 계정(0625chopin)에 두려면 package.json name 을 @0625chopin/shared 로 변경하고
+#      아래/소비 앱의 @0625chopin 스코프도 함께 교체할 것. (division.md / ADR-0001 참조)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "dry-run(발행하지 않고 패키징만)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com
+          scope: "@0625chopin"
+
+      - name: Install
+        run: npm ci
+
+      - name: Quality gate (lint + typecheck + build)
+        run: npm run check-all
+
+      - name: Publish
+        if: ${{ github.event_name == 'release' || inputs.dry_run == false }}
+        run: npm publish
+        env:
+          # GITHUB_TOKEN 은 같은 소유자의 패키지에 대해 packages:write 권한을 가진다.
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pack (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true }}
+        run: npm pack
