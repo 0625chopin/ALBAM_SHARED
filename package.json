@@ -1,7 +1,7 @@
 {
   "name": "@0625chopin/shared",
-  "version": "0.1.9",
-  "private": true,
+  "version": "0.1.10",
+  "private": false,
   "description": "알밤마켓 공개 앱·admin 앱 공유 라이브러리 (도메인 타입·Supabase 클라이언트·UI·유틸·디자인 토큰)",
   "type": "module",
   "sideEffects": [

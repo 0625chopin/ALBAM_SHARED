@@ -26,6 +26,8 @@
 //       거래종료(transactions.ended_at 컬럼 + end_transaction RPC, 구매자 최종 종료) 반영해 재생성.
 //       관리자 콘솔 OPEN-2/6(콘텐츠 블라인드/해제·경매 강제 종료 admin RPC:
 //       admin_blind_content/admin_unblind_content/admin_force_close_auction) 반영해 재생성.
+//       관리자 콘솔 채팅 모니터링 읽기 RPC(get_admin_reported_messages, FA070/OPEN-6:
+//       신고된 방/메시지만 반환) 반영해 재생성.
 
 export type Json =
   | string
@@ -982,6 +984,7 @@ export type Database = {
       get_admin_dashboard_trend: { Args: { p_days?: number }; Returns: Json }
       get_admin_member_detail: { Args: { p_user_id: string }; Returns: Json }
       get_admin_members: { Args: never; Returns: Json }
+      get_admin_reported_messages: { Args: never; Returns: Json }
       get_admin_system_status: { Args: never; Returns: Json }
       get_policy_int: { Args: { p_key: string }; Returns: number }
       increment_site_counter: { Args: { p_key: string }; Returns: number }
